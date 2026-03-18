@@ -14,8 +14,12 @@ A modern, interactive gaming platform where players compete in categories with a
 
 ### Roles
 1. **Admin**: Creates categories, defines ranked answers, reveals answers to players
-2. **Player**: Submits answers, competes with other players, views real-time scores
+2. **Player**: Submits answers (via external flow), competes with other players, views real-time scores on a dynamic synced dashboard
 3. **Answer Viewer**: Views all answers and rankings in read-only mode (useful for spectators)
+
+### Dynamic Dashboard
+- **Synced Views**: When an admin selects a category or toggles "Reveal Answers", all player screens instantly update.
+- **Team Rejoin**: Players can securely rejoin their existing team simply by entering the same team name.
 
 ### Responsive Design
 - Optimized for both desktop and mobile devices
