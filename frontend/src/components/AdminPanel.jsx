@@ -73,7 +73,7 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
         throw new Error('At least one answer is required')
       }
 
-      const response = await categoryAPI.createCategory(gameId, categoryTitle, categoryQuestion, answers)
+      const response = await categoryAPI.createCategory(gameId, categoryTitle, categoryQuestion, answers, import.meta.env.VITE_ADMIN_PASSWORD || 'ziadtest123')
 
       setCategories([...categories, response.data])
       setSelectedCategory(response.data)
@@ -93,7 +93,7 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
     if (!selectedCategory) return
 
     try {
-      await rankAssignmentAPI.assignRank(selectedCategory.id, rank, playerId)
+      await rankAssignmentAPI.assignRank(selectedCategory.id, rank, playerId, import.meta.env.VITE_ADMIN_PASSWORD || 'ziadtest123')
       setRankAssignments({
         ...rankAssignments,
         [rank]: playerId,
@@ -107,7 +107,7 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
     if (!selectedCategory) return
 
     try {
-      await rankAssignmentAPI.removeRankAssignment(selectedCategory.id, rank)
+      await rankAssignmentAPI.removeRankAssignment(selectedCategory.id, rank, import.meta.env.VITE_ADMIN_PASSWORD || 'ziadtest123')
       const newAssignments = { ...rankAssignments }
       delete newAssignments[rank]
       setRankAssignments(newAssignments)

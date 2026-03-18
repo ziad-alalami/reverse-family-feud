@@ -356,3 +356,55 @@
 .categories-list::-webkit-scrollbar-thumb:hover {
   background: #aaa;
 }
+
+/* Fix input and label spacing */
+.grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.grid label {
+  font-weight: 800;
+  font-size: 15px;
+  color: #001a52;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.grid input[type="text"],
+.grid textarea {
+  padding: 12px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #f8f9fa;
+  color: #333;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.grid input[type="text"]:focus,
+.grid textarea:focus {
+  border-color: #004aad;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 74, 173, 0.1);
+  transform: translateY(-2px);
+}
+
+.answer-input-group {
+  margin-bottom: 12px;
+}
+
+.answer-input-group label {
+  margin-bottom: 6px;
+  display: block;
+}
+
+.answer-input-group input {
+  padding: 10px 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
