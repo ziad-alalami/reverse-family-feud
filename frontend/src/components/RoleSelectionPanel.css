@@ -1,0 +1,268 @@
+.role-selection-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #004aad 0%, #001a52 100%);
+  padding: 40px 20px;
+}
+
+.role-selection-content {
+  width: 100%;
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 4px solid #ffed4e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.role-selection-content h1 {
+  font-size: 48px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #001a52;
+  text-transform: uppercase;
+  border-bottom: 3px solid #ddd;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+.role-subtitle {
+  text-align: center;
+  color: #004aad;
+  margin-bottom: 40px;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.role-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.role-btn {
+  background-color: #f8f9fa;
+  border: 3px solid #ccc;
+  color: #001a52;
+  padding: 30px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.role-btn:hover {
+  border-color: #004aad;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 74, 173, 0.2);
+}
+
+.role-btn.role-admin:hover {
+  border-color: #f44336;
+}
+
+.role-btn.role-player:hover {
+  border-color: #4caf50;
+}
+
+.role-btn.role-viewer:hover {
+  border-color: #ff9800;
+}
+
+.role-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.role-name {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.role-desc {
+  font-size: 14px;
+  color: #555;
+  font-weight: 600;
+}
+
+.logout-btn {
+  width: auto;
+  min-width: 200px;
+  margin-top: 20px;
+  align-self: center;
+}
+
+.player-setup {
+  background-color: white;
+  border: 3px solid #ffed4e;
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.player-setup h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #001a52;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 15px;
+}
+
+.form-group label {
+  color: #001a52;
+  font-weight: bold;
+}
+
+.team-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.team-input-group input {
+  flex: 1;
+  border: 2px solid #ccc;
+  background: #f8f9fa;
+  color: #333;
+}
+
+.team-input-group input:focus {
+  border-color: #004aad;
+}
+
+.team-input-group button {
+  flex-shrink: 0;
+  background: #004aad;
+  color: white;
+}
+
+.team-members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.team-member {
+  background-color: #004aad;
+  border: 2px solid #003073;
+  color: white;
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.remove-member-btn {
+  background: none;
+  border: none;
+  color: #ffed4e;
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.remove-member-btn:hover {
+  color: #ff5252;
+}
+
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.color-option {
+  width: 50px;
+  height: 50px;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0 auto;
+}
+
+.color-option:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.color-option.selected {
+  border-color: #fff;
+  box-shadow: 0 0 0 4px #001a52, 0 0 0 7px #ffed4e;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.form-buttons button {
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .role-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+.role-selection-content {
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.role-btn {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.role-btn:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  border-color: #60a5fa;
+  background: rgba(255, 255, 255, 1);
+}
+
+.role-btn:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.form-group input {
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 74, 173, 0.15);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
