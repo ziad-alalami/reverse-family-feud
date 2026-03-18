@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { categoryAPI, rankAssignmentAPI, playerAPI, gameAPI } from '../api/client'
 import './AdminPanel.css'
 
-export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
+export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, playerData }) {
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [showNewCategoryForm, setShowNewCategoryForm] = useState(false)
@@ -17,6 +17,23 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
   const [categoryAnswers, setCategoryAnswers] = useState(
     Array.from({ length: 12 }, (_, i) => '')
   )
+
+  useEffect(() => {
+    const wsUrl = `ws://${window.location.host}/api/ws/ws/${gameId}/${playerId}`;
+    const websocket = new WebSocket(wsUrl);
+
+    websocket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === "player_joined" && message.player_role !== "admin") {
+        setPlayers(prev => {
+          const exists = prev.find(p => p.id === message.player_id);
+          if (exists) return prev;
+          return [...prev, { id: message.player_id, name: message.player_name, role: message.player_role, color: message.color }];
+        });
+      }
+    };
+    return () => websocket.close();
+  }, [gameId, playerId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +90,7 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
         throw new Error('At least one answer is required')
       }
 
-      const response = await categoryAPI.createCategory(gameId, categoryTitle, categoryQuestion, answers, import.meta.env.VITE_ADMIN_PASSWORD || 'ziadtest123')
+      const response = await categoryAPI.createCategory(gameId, categoryTitle, categoryQuestion, answers, adminPassword)
 
       setCategories([...categories, response.data])
       setSelectedCategory(response.data)
@@ -93,7 +110,7 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
     if (!selectedCategory) return
 
     try {
-      await rankAssignmentAPI.assignRank(selectedCategory.id, rank, playerId, import.meta.env.VITE_ADMIN_PASSWORD || 'ziadtest123')
+      await rankAssignmentAPI.assignRank(selectedCategory.id, rank, playerId, adminPassword)
       setRankAssignments({
         ...rankAssignments,
         [rank]: playerId,
@@ -107,7 +124,7 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
     if (!selectedCategory) return
 
     try {
-      await rankAssignmentAPI.removeRankAssignment(selectedCategory.id, rank, import.meta.env.VITE_ADMIN_PASSWORD || 'ziadtest123')
+      await rankAssignmentAPI.removeRankAssignment(selectedCategory.id, rank, adminPassword)
       const newAssignments = { ...rankAssignments }
       delete newAssignments[rank]
       setRankAssignments(newAssignments)
@@ -138,19 +155,22 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
             </button>
 
             <div className="categories-list">
-              {categories.map((cat) => (
+              {categories.map((cat, index) => {
+                const isActive = selectedCategory?.id === cat.id;
+                return (
                 <div
                   key={cat.id}
-                  className={`category-item ${selectedCategory?.id === cat.id ? 'active' : ''}`}
+                  className={`category-item ${isActive ? 'active' : ''}`}
                   onClick={() => {
                     setSelectedCategory(cat)
                     loadRankAssignments(cat.id)
                   }}
                 >
-                  <div className="category-title">{cat.title}</div>
-                  <div className="category-question">{cat.question}</div>
+                  <div className="category-title">{isActive ? cat.title : `Category ${index + 1}`}</div>
+                  {isActive && <div className="category-question">{cat.question}</div>}
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
         </div>
@@ -226,7 +246,7 @@ export default function AdminPanel({ gameId, playerId, onLogout, playerData }) {
                     return (
                       <div key={rank} className="rank-assignment">
                         <div className="rank-number">#{rank}</div>
-                        <div className="rank-answer">{answer?.answer_text || 'N/A'}</div>
+                        <div className="rank-answer" style={{letterSpacing: '3px', fontWeight: '900'}}>{answer?.answer_text ? 'XXXXX' : 'N/A'}</div>
                         <select
                           className="rank-select"
                           value={assignedPlayerId || ''}

@@ -38,7 +38,7 @@ export default function RoleSelectionPanel({ gameId, onRoleSelected, onLogout })
       }
 
       const response = await playerAPI.joinGame(gameId, playerData, password)
-      onRoleSelected(selectedRole, response.data.id, playerData)
+      onRoleSelected(selectedRole, response.data.id, playerData, password)
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to join game')
     } finally {
@@ -76,7 +76,7 @@ export default function RoleSelectionPanel({ gameId, onRoleSelected, onLogout })
       }
 
       const response = await playerAPI.joinGame(gameId, playerData)
-      onRoleSelected('player', response.data.id, playerData)
+      onRoleSelected('player', response.data.id, playerData, null)
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to join game')
     } finally {

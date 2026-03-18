@@ -6,6 +6,7 @@ from app.db import get_session
 from app.models import Player, PlayerCreate
 from app.services import PlayerService, GameService
 from app.config import settings
+from app.routes.websocket import broadcast_player_joined
 
 router = APIRouter()
 
@@ -36,7 +37,18 @@ async def join_game(
             detail="Game not found",
         )
 
-    return await PlayerService.create_player(session, game_id, player_create)
+    new_player = await PlayerService.create_player(session, game_id, player_create)
+    
+    # Broadcast to all connected clients that a new player joined
+    await broadcast_player_joined(
+        game_id=game_id, 
+        player_id=new_player.id, 
+        player_name=new_player.name, 
+        player_role=new_player.role, 
+        color=new_player.color
+    )
+    
+    return new_player
 
 
 @router.get("/{game_id}/players", response_model=List[Player])

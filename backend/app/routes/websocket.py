@@ -23,13 +23,9 @@ async def websocket_endpoint(
 ):
     """
     WebSocket endpoint for real-time game updates.
-
-    Players connect with their player_id to receive score updates.
-    Admin can broadcast rank assignments to update all players.
     """
     await websocket.accept()
 
-    # Store connection
     if game_id not in game_connections:
         game_connections[game_id] = set()
 
@@ -38,17 +34,13 @@ async def websocket_endpoint(
 
     try:
         while True:
-            # Receive message from client
             data = await websocket.receive_text()
             message = json.loads(data)
 
-            # Handle different message types
             if message.get("type") == "ping":
                 await websocket.send_text(json.dumps({"type": "pong"}))
 
-            # For future expansion: handle other message types
             elif message.get("type") == "get_scores":
-                # Get all team scores
                 scores = await GameService.get_team_scores(session, game_id)
                 response = {
                     "type": "scores_update",
@@ -59,6 +51,7 @@ async def websocket_endpoint(
                             "player_name": score.player_name,
                             "color": score.color,
                             "total_points": score.total_points,
+                            "rank_assignments": [{"category_id": a.category_id, "points": a.points} for a in score.rank_assignments]
                         }
                         for score in scores
                     ]
@@ -66,7 +59,6 @@ async def websocket_endpoint(
                 await websocket.send_text(json.dumps(response))
 
     except WebSocketDisconnect:
-        # Remove connection
         if game_id in game_connections:
             game_connections[game_id].discard(websocket)
             if not game_connections[game_id]:
@@ -86,7 +78,6 @@ async def broadcast_to_game(game_id: str, message: dict):
             except Exception:
                 disconnected.add(connection)
 
-        # Remove disconnected connections
         for connection in disconnected:
             game_connections[game_id].discard(connection)
 
@@ -107,6 +98,27 @@ async def broadcast_rank_assigned(
         "category_id": category_id,
         "rank": rank,
         "points": points,
+    }
+    await broadcast_to_game(game_id, message)
+    return {"broadcast": True}
+
+
+@router.post("/broadcast/{game_id}/player-joined")
+async def broadcast_player_joined(
+    game_id: str,
+    player_id: str,
+    player_name: str,
+    player_role: str,
+    color: str,
+):
+    """Broadcast when a new player/team joins"""
+    message = {
+        "type": "player_joined",
+        "game_id": game_id,
+        "player_id": player_id,
+        "player_name": player_name,
+        "player_role": player_role,
+        "color": color,
     }
     await broadcast_to_game(game_id, message)
     return {"broadcast": True}

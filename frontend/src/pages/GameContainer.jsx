@@ -10,11 +10,15 @@ export default function GameContainer({ gameId, onLogout }) {
   const [playerId, setPlayerId] = useState(null)
   const [playerRole, setPlayerRole] = useState(null)
   const [playerData, setPlayerData] = useState(null)
+  const [adminPassword, setAdminPassword] = useState(null)
 
-  const handleRoleSelected = (role, id, data) => {
+  const handleRoleSelected = (role, id, data, password) => {
     setPlayerRole(role)
     setPlayerId(id)
     setPlayerData(data)
+    if (password) {
+      setAdminPassword(password)
+    }
     setStep('game')
   }
 
@@ -23,6 +27,7 @@ export default function GameContainer({ gameId, onLogout }) {
     setPlayerId(null)
     setPlayerRole(null)
     setPlayerData(null)
+    setAdminPassword(null)
   }
 
   const finalLogout = () => {
@@ -44,13 +49,13 @@ export default function GameContainer({ gameId, onLogout }) {
     return (
       <div className="game-container">
         {playerRole === 'admin' && (
-          <AdminPanel gameId={gameId} playerId={playerId} onLogout={handleLogoutInternal} playerData={playerData} />
+          <AdminPanel gameId={gameId} playerId={playerId} adminPassword={adminPassword} onLogout={handleLogoutInternal} playerData={playerData} />
         )}
         {playerRole === 'player' && (
           <PlayerView gameId={gameId} playerId={playerId} onLogout={handleLogoutInternal} playerData={playerData} />
         )}
         {playerRole === 'answer_viewer' && (
-          <AnswerViewerPanel gameId={gameId} playerId={playerId} onLogout={handleLogoutInternal} playerData={playerData} />
+          <AnswerViewerPanel gameId={gameId} playerId={playerId} adminPassword={adminPassword} onLogout={handleLogoutInternal} playerData={playerData} />
         )}
       </div>
     )

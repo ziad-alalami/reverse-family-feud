@@ -172,7 +172,21 @@ class GameService:
 class PlayerService:
     @staticmethod
     async def create_player(session: AsyncSession, game_id: str, player_create: PlayerCreate) -> Player:
-        """Create a new player in a game"""
+        """Create a new player in a game, or return existing if name matches"""
+        # First check if player/team already exists in this game by name
+        result = await session.execute(
+            select(PlayerModel).where(
+                PlayerModel.game_id == game_id,
+                PlayerModel.name == player_create.name
+            )
+        )
+        existing_player = result.scalars().first()
+        
+        if existing_player:
+            # Rejoining existing team, ignore other fields
+            return PlayerService._model_to_schema(existing_player)
+            
+        # Create new team/player
         player_id = str(uuid.uuid4())
         team_members_json = ",".join(player_create.team_members) if player_create.team_members else None
 

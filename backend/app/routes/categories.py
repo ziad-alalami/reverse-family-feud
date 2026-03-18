@@ -6,6 +6,7 @@ from app.db import get_session
 from app.models import Category, CategoryCreate, CategoryUpdate, RankAssignmentCreate
 from app.services import CategoryService, RankAssignmentService, GameService
 from app.config import settings
+from app.routes.websocket import broadcast_scores_update
 
 router = APIRouter()
 
@@ -159,6 +160,7 @@ async def assign_rank(
     assignment = await RankAssignmentService.assign_rank(
         session, category.game_id, category_id, rank_assignment.rank, rank_assignment.player_id
     )
+    await broadcast_scores_update(category.game_id)
     return assignment
 
 
@@ -201,4 +203,5 @@ async def remove_rank_assignment(
             detail="No team assigned to this rank",
         )
 
+    await broadcast_scores_update(category.game_id)
     return {"category_id": category_id, "rank": rank, "removed": True}

@@ -1,20 +1,26 @@
 .player-view {
   min-height: 100vh;
-  background-color: #1f2937;
   padding: 20px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  /* Remove conflicting dark gray background, let App.css handle the gradient */
+  color: #f8fafc;
 }
 
 .player-header {
+  width: 100%;
+  max-width: 1000px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 20px;
-  background-color: #2d3748;
-  border: 1px solid #4b5563;
-  border-radius: 12px;
+  padding: 20px 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px solid #ffed4e;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  color: #001a52;
 }
 
 .player-info {
@@ -25,15 +31,17 @@
 }
 
 .game-id {
-  font-size: 12px;
-  color: #9ca3af;
+  font-size: 14px;
+  color: #555;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  font-weight: bold;
 }
 
 .player-name {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .team-members {
@@ -43,145 +51,177 @@
 }
 
 .team-member {
-  font-size: 12px;
-  background-color: #1f2937;
+  font-size: 13px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
   padding: 4px 12px;
   border-radius: 20px;
-  color: #d1d5db;
+  color: #334155;
+  font-weight: 600;
 }
 
 .player-content {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.top-sections {
   display: grid;
   grid-template-columns: 1fr;
   gap: 30px;
 }
 
 .total-score-section {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #004aad 0%, #001a52 100%);
   padding: 40px;
-  border-radius: 12px;
+  border-radius: 16px;
   text-align: center;
+  border: 3px solid #ffed4e;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  color: white;
 }
 
 .score-label {
-  font-size: 14px;
+  font-size: 18px;
   opacity: 0.9;
   margin-bottom: 10px;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #ffed4e;
 }
 
 .score-value {
-  font-size: 64px;
+  font-size: 72px;
   font-weight: 900;
+  text-shadow: 2px 2px 0 #000;
 }
 
 .categories-section h2 {
-  font-size: 24px;
+  font-size: 28px;
   margin-bottom: 20px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .categories-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
   margin-bottom: 30px;
 }
 
 .category-btn {
-  background-color: #2d3748;
-  border: 2px solid #4b5563;
-  color: #ffffff;
-  padding: 16px;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px solid transparent;
+  color: #001a52;
+  padding: 20px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .category-btn:hover {
-  border-color: #6b7280;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  border-color: #ffed4e;
 }
 
 .category-btn.active {
-  border-color: #3b82f6;
-  background-color: rgba(59, 130, 246, 0.1);
+  border-color: #ffed4e;
+  background: #ffed4e;
+  color: #001a52;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(255, 237, 78, 0.4);
 }
 
 .category-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  text-transform: uppercase;
 }
 
 .category-score {
-  font-size: 18px;
-  font-weight: 700;
-  color: #3b82f6;
+  font-size: 22px;
+  font-weight: 900;
+  color: #004aad;
 }
 
 .answer-section {
-  background-color: #2d3748;
-  border: 1px solid #4b5563;
-  border-radius: 12px;
-  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px solid #ffed4e;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  color: #001a52;
 }
 
 .category-question {
-  margin-bottom: 24px;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
 .category-question h3 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  color: #004aad;
 }
 
 .category-question p {
-  font-size: 16px;
-  color: #d1d5db;
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
 }
 
 .answer-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
 }
 
 .answer-form textarea {
-  min-height: 120px;
-  padding: 12px;
+  min-height: 150px;
+  padding: 20px;
+  font-size: 18px;
   resize: vertical;
+  border-radius: 12px;
+  border: 2px solid #ccc;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.answer-form textarea:focus {
+  border-color: #004aad;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0, 74, 173, 0.15);
 }
 
 .answer-form button {
-  padding: 12px 24px;
+  padding: 16px 32px;
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-radius: 12px;
+  letter-spacing: 1px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .player-view {
-    padding: 40px;
+    padding: 40px 20px;
   }
 
-  .player-content {
-    grid-template-columns: 200px 1fr;
-  }
-
-  .total-score-section {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .categories-section {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .answer-section {
-    grid-column: 1 / -1;
-  }
-
-  .player-header {
-    margin-bottom: 40px;
+  .top-sections {
+    grid-template-columns: 350px 1fr;
   }
 }
