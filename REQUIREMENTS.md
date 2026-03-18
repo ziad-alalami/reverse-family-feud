@@ -161,7 +161,7 @@ chmod +x start.sh
 ### Backend .env
 ```
 DATABASE_URL="sqlite+aiosqlite:///./eid_game.db"
-ADMIN_PASSWORD="ILOVEPINACOLADA@2004"
+ADMIN_PASSWORD="set-it-yourself"
 DEBUG=True
 CORS_ORIGINS='["http://localhost:3000", "http://localhost:5173", "*"]'
 ```

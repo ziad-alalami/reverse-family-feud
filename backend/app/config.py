@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./eid_game.db"
 
     # Security
-    ADMIN_PASSWORD: str = "ILOVEPINACOLADA@2004"
+    ADMIN_PASSWORD: str = "admin"
 
     # CORS
     CORS_ORIGINS: List[str] = ["*"]

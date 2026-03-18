@@ -111,7 +111,7 @@ The frontend will start at `http://localhost:5173`
 ## Usage Flow
 
 ### 1. Landing Page
-- **Create New Game**: Enter admin password (ILOVEPINACOLADA@2004) and create a new game
+- **Create New Game**: Enter admin password (set-it-yourself) and create a new game
 - **Enter Existing Game**: Join with game ID
 
 ### 2. Role Selection
@@ -184,7 +184,7 @@ After joining, select your role:
 ## Security
 
 ### Admin Password
-The admin password is hardcoded as `ILOVEPINACOLADA@2004`. In production:
+The admin password is hardcoded as `set-it-yourself`. In production:
 - Use environment variables
 - Implement proper authentication
 - Use HTTPS/WSS
