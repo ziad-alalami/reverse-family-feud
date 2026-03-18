@@ -247,7 +247,7 @@ POST /api/categories/{game_id}/create
 Headers:
   Content-Type: application/json
 QueryParams:
-  admin_password=ILOVEPINACOLADA@2004
+  admin_password=set-it-yourself
 
 Body:
 {
@@ -326,7 +326,7 @@ Response: 201 Created
 ```
 PUT /api/answers/{answer_id}/assign-rank/{rank}
 QueryParams:
-  admin_password=ILOVEPINACOLADA@2004
+  admin_password=set-it-yourself
   rank=1
 
 Response: 200 OK
@@ -414,31 +414,78 @@ Server responds:
 }
 ```
 
-#### Score Update Message
+#### Score Update Request (Client)
 ```
-Server broadcasts:
+Client sends:
 {
-  "type": "score_update",
-  "player_id": "uuid",
-  "player_name": "Team A",
-  "total_score": 45,
-  "category_score": {
-    "category_id": "uuid",
-    "points": 10
-  }
+  "type": "get_scores"
 }
 ```
 
-#### Rank Assigned Message
+#### Scores Update Broadcast (Leaderboard)
 ```
 Server broadcasts:
 {
-  "type": "rank_assigned",
+  "type": "scores_update",
+  "game_id": "string",
+  "scores": [
+    {
+      "player_id": "uuid",
+      "player_name": "Team A",
+      "color": "#ff0000",
+      "total_points": 45,
+      "rank_assignments": [
+        {
+          "category_id": "uuid",
+          "rank": 1,
+          "points": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Player Joined Broadcast
+```
+Server broadcasts:
+{
+  "type": "player_joined",
+  "game_id": "string",
   "player_id": "uuid",
   "player_name": "Team A",
+  "player_role": "player",
+  "color": "#ff0000"
+}
+```
+
+#### Active Category Update Broadcast
+```
+Server broadcasts:
+{
+  "type": "active_category_update",
+  "game_id": "string",
+  "category_id": "uuid"
+}
+```
+
+#### Reveal Answers Broadcast
+```
+Server broadcasts:
+{
+  "type": "reveal_answers",
+  "game_id": "string",
   "category_id": "uuid",
-  "rank": 1,
-  "points": 1
+  "reveal": true
+}
+```
+
+#### Trigger Global Score Update Request
+```
+Server broadcasts:
+{
+  "type": "scores_update_request",
+  "game_id": "string"
 }
 ```
 
@@ -503,7 +550,7 @@ def calculate_points(rank):
 
 ### Admin Password
 - Used for: Game creation, category creation, rank assignment, admin/viewer roles
-- Default: `ILOVEPINACOLADA@2004`
+- Default: `set-it-yourself`
 - Passed as: `?admin_password=...` query parameter
 
 ### Player Identification
@@ -568,7 +615,7 @@ http://localhost:8000/docs
 curl -X POST http://localhost:8000/api/games/create \
   -H "Content-Type: application/json" \
   -d '{"title":"Test","admin_name":"Admin"}' \
-  -G --data-urlencode 'admin_password=ILOVEPINACOLADA@2004'
+  -G --data-urlencode 'admin_password=set-it-yourself'
 
 # Join game
 curl -X POST http://localhost:8000/api/players/ABC123/join \

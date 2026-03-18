@@ -37,7 +37,7 @@ I've successfully built a complete competitive gaming platform with real-time sc
    - Automatic score calculation and display
 
 2. **Admin Password Protection**
-   - Password: `ILOVEPINACOLADA@2004`
+   - Password: `set-it-yourself`
    - Protects: Game creation, category creation, rank assignment, admin/viewer roles
 
 3. **Scoring System**
@@ -244,7 +244,7 @@ npm run dev
 
 ## Example Workflow
 
-1. **Admin creates game** (password: ILOVEPINACOLADA@2004)
+1. **Admin creates game** (password: set-it-yourself)
 2. **Admin creates category** with ranked answers
 3. **Players join** with game ID
 4. **Players submit** answers

@@ -14,8 +14,12 @@ A modern, interactive gaming platform where players compete in categories with a
 
 ### Roles
 1. **Admin**: Creates categories, defines ranked answers, reveals answers to players
-2. **Player**: Submits answers, competes with other players, views real-time scores
+2. **Player**: Submits answers (via external flow), competes with other players, views real-time scores on a dynamic synced dashboard
 3. **Answer Viewer**: Views all answers and rankings in read-only mode (useful for spectators)
+
+### Dynamic Dashboard
+- **Synced Views**: When an admin selects a category or toggles "Reveal Answers", all player screens instantly update.
+- **Team Rejoin**: Players can securely rejoin their existing team simply by entering the same team name.
 
 ### Responsive Design
 - Optimized for both desktop and mobile devices
@@ -107,7 +111,7 @@ The frontend will start at `http://localhost:5173`
 ## Usage Flow
 
 ### 1. Landing Page
-- **Create New Game**: Enter admin password (ILOVEPINACOLADA@2004) and create a new game
+- **Create New Game**: Enter admin password (set-it-yourself) and create a new game
 - **Enter Existing Game**: Join with game ID
 
 ### 2. Role Selection
@@ -180,7 +184,7 @@ After joining, select your role:
 ## Security
 
 ### Admin Password
-The admin password is hardcoded as `ILOVEPINACOLADA@2004`. In production:
+The admin password is hardcoded as `set-it-yourself`. In production:
 - Use environment variables
 - Implement proper authentication
 - Use HTTPS/WSS
