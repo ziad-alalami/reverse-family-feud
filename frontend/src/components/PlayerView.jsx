@@ -17,7 +17,8 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const wsUrl = `ws://${window.location.host}/api/ws/ws/${gameId}/${playerId}`
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/api/ws/ws/${gameId}/${playerId}`;
     const websocket = new WebSocket(wsUrl)
 
     websocket.onopen = () => {
