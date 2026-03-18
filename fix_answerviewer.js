@@ -1,4 +1,8 @@
-import { useState, useEffect } from 'react'
+const fs = require('fs');
+let code = fs.readFileSync('frontend/src/components/AnswerViewerPanel.jsx', 'utf8');
+
+// Replace AnswerViewerPanel entirely to match PlayerView's aesthetics but show everything
+const newViewer = `import { useState, useEffect } from 'react'
 import { categoryAPI, rankAssignmentAPI, playerAPI } from '../api/client'
 import './AnswerViewerPanel.css'
 
@@ -80,7 +84,7 @@ export default function AnswerViewerPanel({ gameId, playerId, adminPassword, onL
                 return (
                   <div
                     key={cat.id}
-                    className={`category-item ${isActive ? 'active' : ''}`}
+                    className={\`category-item \${isActive ? 'active' : ''}\`}
                     onClick={() => handleCategorySelect(cat.id)}
                     style={{
                       background: isActive ? '#ffed4e' : 'rgba(255, 255, 255, 0.8)',
@@ -120,7 +124,7 @@ export default function AnswerViewerPanel({ gameId, playerId, adminPassword, onL
                   return answer ? (
                     <div key={rank} style={{ 
                       background: assignedTeam ? '#eef2ff' : '#f8f9fa', 
-                      border: `2px solid ${assignedTeam?.color || '#004aad'}`, 
+                      border: \`2px solid \${assignedTeam?.color || '#004aad'}\`, 
                       borderRadius: '8px', 
                       padding: '15px', 
                       display: 'flex', 
@@ -128,7 +132,7 @@ export default function AnswerViewerPanel({ gameId, playerId, adminPassword, onL
                       gap: '15px',
                       boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                     }}>
-                      <div style={{ background: assignedTeam?.color || '#ffed4e', color: assignedTeam ? '#fff' : '#004aad', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: '900', fontSize: '20px', border: `2px solid ${assignedTeam?.color || '#004aad'}` }}>
+                      <div style={{ background: assignedTeam?.color || '#ffed4e', color: assignedTeam ? '#fff' : '#004aad', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: '900', fontSize: '20px', border: \`2px solid \${assignedTeam?.color || '#004aad'}\` }}>
                         #{rank}
                       </div>
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -166,3 +170,6 @@ export default function AnswerViewerPanel({ gameId, playerId, adminPassword, onL
     </div>
   )
 }
+`;
+
+fs.writeFileSync('frontend/src/components/AnswerViewerPanel.jsx', newViewer);

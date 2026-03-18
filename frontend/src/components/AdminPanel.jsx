@@ -176,8 +176,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
                     wsAPI.broadcastActiveCategory(gameId, cat.id).catch(console.error)
                   }}
                 >
-                  <div className="category-title">{isActive ? cat.title : `Category ${index + 1}`}</div>
-                  {isActive && <div className="category-question">{cat.question}</div>}
+                  <div className="category-title" style={{ margin: 0 }}>{isActive ? cat.title : `Category ${index + 1}`}</div>
                 </div>
               );
             })}
@@ -264,7 +263,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
                     return (
                       <div key={rank} className="rank-assignment">
                         <div className="rank-number">#{rank}</div>
-                        <div className="rank-answer" style={{letterSpacing: '3px', fontWeight: '900'}}>{answer?.answer_text ? 'XXXXX' : 'N/A'}</div>
+                        <div className="rank-answer" style={{letterSpacing: revealedCategories[selectedCategory.id] ? '0px' : '3px', fontWeight: '900'}}>{answer?.answer_text ? (revealedCategories[selectedCategory.id] ? answer.answer_text : 'XXXXX') : 'N/A'}</div>
                         <select
                           className="rank-select"
                           value={assignedPlayerId || ''}
