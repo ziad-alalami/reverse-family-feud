@@ -1,35 +1,47 @@
 const fs = require('fs');
 let code = fs.readFileSync('frontend/src/components/PlayerView.jsx', 'utf8');
 
-// 1. WebSocket onmessage update
-const oldWsHandle = `      } else if (message.type === 'scores_update') {
-        setAllTeams(message.scores || []);`;
+const oldAnswerBlock = `return answer ? (
+                      <div key={rank} style={{ 
+                        background: '#f8f9fa', 
+                        border: '2px solid #004aad', 
+                        borderRadius: '8px', 
+                        padding: '15px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '15px',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                      }}>
+                        <div style={{ background: '#ffed4e', color: '#004aad', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: '900', fontSize: '20px', border: '2px solid #004aad' }}>
+                          #{rank}
+                        </div>
+                        <div style={{ flex: 1, fontSize: '18px', fontWeight: 'bold', color: '#333', textTransform: 'uppercase' }}>
+                          {answer.answer_text}
+                        </div>
+                      </div>
+                    ) : null;`;
 
-const newWsHandle = `      } else if (message.type === 'scores_update') {
-        setAllTeams(message.scores || []);
-        const myScoreData = (message.scores || []).find(s => s.player_id === playerId);
-        if (myScoreData) {
-          setTotalScore(myScoreData.total_points);
-          const newCatScores = {};
-          (myScoreData.rank_assignments || []).forEach(a => {
-            newCatScores[a.category_id] = (newCatScores[a.category_id] || 0) + a.points;
-          });
-          setCategoryScores(newCatScores);
-        }`;
+const newAnswerBlock = `const assignedTeam = allTeams.find(t => (t.rank_assignments || []).some(ra => ra.category_id === currentCategoryId && ra.rank === rank));
+                    return answer ? (
+                      <div key={rank} style={{ 
+                        background: assignedTeam ? '#eef2ff' : '#f8f9fa', 
+                        border: \`2px solid \${assignedTeam?.color || '#004aad'}\`, 
+                        borderRadius: '8px', 
+                        padding: '15px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '15px',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                      }}>
+                        <div style={{ background: assignedTeam?.color || '#ffed4e', color: assignedTeam ? '#fff' : '#004aad', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: '900', fontSize: '20px', border: \`2px solid \${assignedTeam?.color || '#004aad'}\` }}>
+                          #{rank}
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#333', textTransform: 'uppercase' }}>{answer.answer_text}</span>
+                          {assignedTeam && <span style={{ fontSize: '13px', fontWeight: '600', color: assignedTeam.color, marginTop: '4px' }}>✓ {assignedTeam.player_name}</span>}
+                        </div>
+                      </div>
+                    ) : null;`;
 
-code = code.replace(oldWsHandle, newWsHandle);
-
-// 2. Remove answer form completely.
-const answerFormRegex = /<form onSubmit=\{handleSubmitAnswer\} className="answer-form">[\s\S]*?<\/form>/;
-code = code.replace(answerFormRegex, `<div style={{textAlign: 'center', marginTop: '20px', fontSize: '18px', fontWeight: 'bold', color: '#ffed4e'}}>Waiting for Admin to reveal answers and assign points...</div>`);
-
-// 3. Update categories map to use index
-const oldCatMap = `{categories.map(category => (`;
-const newCatMap = `{categories.map((category, index) => (`;
-code = code.replace(oldCatMap, newCatMap);
-
-const oldCatTitle = `<div className="category-title">{category.title}</div>`;
-const newCatTitle = `<div className="category-title">{currentCategoryId === category.id ? category.title : \`Category \${index + 1}\`}</div>`;
-code = code.replace(oldCatTitle, newCatTitle);
-
+code = code.replace(oldAnswerBlock, newAnswerBlock);
 fs.writeFileSync('frontend/src/components/PlayerView.jsx', code);

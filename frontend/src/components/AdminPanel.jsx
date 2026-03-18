@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { categoryAPI, rankAssignmentAPI, playerAPI, gameAPI } from '../api/client'
+import { categoryAPI, rankAssignmentAPI, playerAPI, gameAPI, wsAPI } from '../api/client'
 import './AdminPanel.css'
 
 export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, playerData }) {
@@ -10,6 +10,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
   const [rankAssignments, setRankAssignments] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [revealedCategories, setRevealedCategories] = useState({})
 
   // Form states
   const [categoryTitle, setCategoryTitle] = useState('')
@@ -44,7 +45,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
         ])
 
         setCategories(categoriesRes.data)
-        setPlayers(playersRes.data.filter(p => p.role !== 'admin') || [])
+        setPlayers((playersRes.data || []).filter(p => p.role !== 'admin'))
 
         if (categoriesRes.data.length > 0) {
           setSelectedCategory(categoriesRes.data[0])
@@ -72,6 +73,13 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
     }
   }
 
+  
+  const toggleReveal = (categoryId) => {
+    const nextState = !revealedCategories[categoryId];
+    setRevealedCategories({...revealedCategories, [categoryId]: nextState});
+    wsAPI.broadcastRevealAnswers(gameId, categoryId, nextState).catch(console.error);
+  };
+
   const handleCreateCategory = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -95,6 +103,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
       setCategories([...categories, response.data])
       setSelectedCategory(response.data)
       setShowNewCategoryForm(false)
+      wsAPI.broadcastActiveCategory(gameId, response.data.id).catch(console.error)
       setCategoryTitle('')
       setCategoryQuestion('')
       setCategoryAnswers(Array(12).fill(''))
@@ -164,6 +173,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
                   onClick={() => {
                     setSelectedCategory(cat)
                     loadRankAssignments(cat.id)
+                    wsAPI.broadcastActiveCategory(gameId, cat.id).catch(console.error)
                   }}
                 >
                   <div className="category-title">{isActive ? cat.title : `Category ${index + 1}`}</div>
@@ -234,6 +244,14 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
             <div className="card">
               <div className="card-title">{selectedCategory.title}</div>
               <p className="category-question mb">{selectedCategory.question}</p>
+              <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
+                <button 
+                  className={revealedCategories[selectedCategory.id] ? "btn btn-secondary" : "btn btn-primary"}
+                  onClick={() => toggleReveal(selectedCategory.id)}
+                >
+                  {revealedCategories[selectedCategory.id] ? "Hide Answers from Players" : "Reveal Answers to Players"}
+                </button>
+              </div>
 
               <div>
                 <label className="section-label">Assign Teams to Ranks</label>

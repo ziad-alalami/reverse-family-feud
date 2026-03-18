@@ -51,7 +51,7 @@ async def websocket_endpoint(
                             "player_name": score.player_name,
                             "color": score.color,
                             "total_points": score.total_points,
-                            "rank_assignments": [{"category_id": a.category_id, "points": a.points} for a in score.rank_assignments]
+                            "rank_assignments": [{"category_id": a.category_id, "rank": a.rank, "points": a.points} for a in score.rank_assignments]
                         }
                         for score in scores
                     ]
@@ -132,6 +132,36 @@ async def broadcast_scores_update(
     message = {
         "type": "scores_update_request",
         "game_id": game_id,
+    }
+    await broadcast_to_game(game_id, message)
+    return {"broadcast": True}
+
+@router.post("/broadcast/{game_id}/active-category")
+async def broadcast_active_category(
+    game_id: str,
+    category_id: str,
+):
+    """Broadcast when the admin changes the active category"""
+    message = {
+        "type": "active_category_update",
+        "game_id": game_id,
+        "category_id": category_id,
+    }
+    await broadcast_to_game(game_id, message)
+    return {"broadcast": True}
+
+@router.post("/broadcast/{game_id}/reveal-answers")
+async def broadcast_reveal_answers(
+    game_id: str,
+    category_id: str,
+    reveal: bool,
+):
+    """Broadcast when the admin toggles answer reveal"""
+    message = {
+        "type": "reveal_answers",
+        "game_id": game_id,
+        "category_id": category_id,
+        "reveal": reveal,
     }
     await broadcast_to_game(game_id, message)
     return {"broadcast": True}

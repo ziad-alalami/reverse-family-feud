@@ -12,6 +12,8 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [ws, setWs] = useState(null)
+  const [adminActiveCategory, setAdminActiveCategory] = useState(null)
+  const [revealedCategories, setRevealedCategories] = useState({})
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -26,7 +28,12 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
     websocket.onmessage = (event) => {
       const message = JSON.parse(event.data)
 
-      if (message.type === 'score_update') {
+            if (message.type === 'active_category_update') {
+        setAdminActiveCategory(message.category_id);
+        setCurrentCategoryId(message.category_id);
+      } else if (message.type === 'reveal_answers') {
+        setRevealedCategories(prev => ({...prev, [message.category_id]: message.reveal}));
+      } else if (message.type === 'score_update') {
         setTotalScore(message.total_score)
         if (message.category_score) {
           setCategoryScores({
@@ -180,7 +187,8 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
               <button
                 key={category.id}
                 className={`category-btn ${currentCategoryId === category.id ? 'active' : ''}`}
-                onClick={() => setCurrentCategoryId(category.id)}
+                style={{ cursor: 'default' }}
+                disabled
               >
                 <div className="category-title">{currentCategoryId === category.id ? category.title : `Category ${index + 1}`}</div>
                 <div className="category-score">
@@ -199,7 +207,46 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
               <p>{currentCategory.question}</p>
             </div>
 
-            <div style={{textAlign: 'center', marginTop: '20px', fontSize: '18px', fontWeight: 'bold', color: '#ffed4e'}}>Waiting for Admin to reveal answers and assign points...</div>
+            
+              {revealedCategories[currentCategoryId] ? (
+                <div className="revealed-answers" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', marginTop: '30px' }}>
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((rank) => {
+                    const answer = currentCategory.answers?.find(a => a.rank === rank);
+                    const isAssigned = allTeams.find(t => (t.rank_assignments || []).some(ra => ra.category_id === currentCategoryId && ra.points === (answer?.points || 0)));
+                    // We need a better way to find who got it. Since we know rank_assignments have points, but we don't have rank in team score unless we broadcast it.
+                    // Let's rely on total points or assume the backend scores are just what we have.
+                    // For now, let's just show the answers cleanly!
+                    const assignedTeam = allTeams.find(t => (t.rank_assignments || []).some(ra => ra.category_id === currentCategoryId && ra.rank === rank));
+                    return answer ? (
+                      <div key={rank} style={{ 
+                        background: assignedTeam ? '#eef2ff' : '#f8f9fa', 
+                        border: `2px solid ${assignedTeam?.color || '#004aad'}`, 
+                        borderRadius: '8px', 
+                        padding: '15px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '15px',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                      }}>
+                        <div style={{ background: assignedTeam?.color || '#ffed4e', color: assignedTeam ? '#fff' : '#004aad', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: '900', fontSize: '20px', border: `2px solid ${assignedTeam?.color || '#004aad'}` }}>
+                          #{rank}
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#333', textTransform: 'uppercase' }}>{answer.answer_text}</span>
+                          {assignedTeam && <span style={{ fontSize: '13px', fontWeight: '600', color: assignedTeam.color, marginTop: '4px' }}>✓ {assignedTeam.player_name}</span>}
+                        </div>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              ) : (
+                <div style={{textAlign: 'center', marginTop: '20px', fontSize: '18px', fontWeight: 'bold', color: '#001a52', padding: '20px', background: '#f8f9fa', borderRadius: '12px', border: '2px dashed #ccc'}}>
+                  {currentCategoryId === adminActiveCategory 
+                    ? "Active Category! Waiting for Admin to reveal answers..." 
+                    : "Waiting for Admin to reveal answers and assign points..."}
+                </div>
+              )}
+
           </div>
         )}
       </div>

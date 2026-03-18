@@ -77,3 +77,8 @@ export const rankAssignmentAPI = {
   getCategoryAssignments: (categoryId) =>
     axios.get(`${API_BASE}/categories/${categoryId}/assign-rank`),
 };
+
+export const wsAPI = {
+  broadcastActiveCategory: (gameId, categoryId) => axios.post(`${API_BASE}/ws/broadcast/${gameId}/active-category?category_id=${categoryId}`),
+  broadcastRevealAnswers: (gameId, categoryId, reveal) => axios.post(`${API_BASE}/ws/broadcast/${gameId}/reveal-answers?category_id=${categoryId}&reveal=${reveal}`)
+};
