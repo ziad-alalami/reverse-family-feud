@@ -11,6 +11,37 @@ export default function AnswerViewerPanel({ gameId, playerId, adminPassword, onL
 
   // We'll borrow the layout and styling logic from AdminPanel/PlayerView
   useEffect(() => {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/api/ws/ws/${gameId}/${playerId}`;
+    const websocket = new WebSocket(wsUrl);
+
+    websocket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === "player_joined" && message.player_role !== "admin") {
+        setPlayers(prev => {
+          const exists = prev.find(p => p.id === message.player_id);
+          if (exists) return prev;
+          return [...prev, { id: message.player_id, name: message.player_name, role: message.player_role, color: message.color }];
+        });
+      } else if (message.type === "active_category_update") {
+        setCurrentCategoryId(message.category_id);
+        loadRankAssignments(message.category_id);
+        
+        // Fetch categories again in case a new one was added
+        categoryAPI.getCategoryList(gameId)
+          .then(res => setCategories(res.data))
+          .catch(err => console.error('Failed to update categories', err));
+      } else if (message.type === "rank_assigned") {
+        setCurrentCategoryId(prev => {
+          loadRankAssignments(prev);
+          return prev;
+        });
+      }
+    };
+    return () => websocket.close();
+  }, [gameId, playerId]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [categoriesRes, playersRes] = await Promise.all([
@@ -111,7 +142,7 @@ export default function AnswerViewerPanel({ gameId, playerId, adminPassword, onL
                 <p>{currentCategory.question}</p>
               </div>
 
-              <div className="revealed-answers" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', marginTop: '30px' }}>
+              <div className="revealed-answers viewer-answers-grid">
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((rank) => {
                   const answer = currentCategory.answers?.find(a => a.rank === rank);
                   const assignedPlayerId = rankAssignments[rank];

@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from app.db import get_session
-from app.models import Category, CategoryCreate, CategoryUpdate, RankAssignmentCreate
+from app.models import Category, CategoryCreate, CategoryUpdate, RankAssignmentCreate, RankAssignment
 from app.services import CategoryService, RankAssignmentService, GameService
 from app.config import settings
 from app.routes.websocket import broadcast_scores_update
@@ -205,3 +205,17 @@ async def remove_rank_assignment(
 
     await broadcast_scores_update(category.game_id)
     return {"category_id": category_id, "rank": rank, "removed": True}
+
+@router.get("/{category_id}/assign-rank", response_model=List[RankAssignment])
+async def get_category_assignments(
+    category_id: str,
+    session: AsyncSession = Depends(get_session),
+):
+    """Get all rank assignments for a category"""
+    category = await CategoryService.get_category(session, category_id)
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found",
+        )
+    return await RankAssignmentService.get_category_assignments(session, category_id)

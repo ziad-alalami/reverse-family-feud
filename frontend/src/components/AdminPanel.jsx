@@ -62,6 +62,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
   }, [gameId])
 
   const loadRankAssignments = async (categoryId) => {
+    setRankAssignments({})
     try {
       const response = await rankAssignmentAPI.getCategoryAssignments(categoryId)
       const assignments = {}
@@ -177,7 +178,7 @@ export default function AdminPanel({ gameId, playerId, adminPassword, onLogout, 
                     wsAPI.broadcastActiveCategory(gameId, cat.id).catch(console.error)
                   }}
                 >
-                  <div className="category-title" style={{ margin: 0 }}>{isActive ? cat.title : `Category ${index + 1}`}</div>
+                  <div className="category-title" style={{ margin: 0 }}>{cat.title}</div>
                 </div>
               );
             })}

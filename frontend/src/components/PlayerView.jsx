@@ -14,6 +14,7 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
   const [ws, setWs] = useState(null)
   const [adminActiveCategory, setAdminActiveCategory] = useState(null)
   const [revealedCategories, setRevealedCategories] = useState({})
+  const [seenCategories, setSeenCategories] = useState(new Set())
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -32,6 +33,12 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
             if (message.type === 'active_category_update') {
         setAdminActiveCategory(message.category_id);
         setCurrentCategoryId(message.category_id);
+        setSeenCategories(prev => new Set(prev).add(message.category_id));
+        
+        // Fetch categories again in case a new one was added
+        categoryAPI.getGameCategories(gameId)
+          .then(res => setCategories(res.data))
+          .catch(err => console.error('Failed to update categories', err));
       } else if (message.type === 'reveal_answers') {
         setRevealedCategories(prev => ({...prev, [message.category_id]: message.reveal}));
       } else if (message.type === 'score_update') {
@@ -91,6 +98,7 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
         setCategories(response.data)
         if (response.data.length > 0) {
           setCurrentCategoryId(response.data[0].id)
+          setSeenCategories(prev => new Set(prev).add(response.data[0].id))
         }
       } catch (err) {
         console.error('Failed to fetch categories:', err)
@@ -184,19 +192,21 @@ export default function PlayerView({ gameId, playerId, onLogout, playerData }) {
         <div className="categories-section">
           <h2>Categories</h2>
           <div className="categories-list">
-            {categories.map((category, index) => (
+            {categories.map((category, index) => {
+              const isSeen = seenCategories.has(category.id);
+              return (
               <button
                 key={category.id}
                 className={`category-btn ${currentCategoryId === category.id ? 'active' : ''}`}
                 style={{ cursor: 'default' }}
                 disabled
               >
-                <div className="category-title">{currentCategoryId === category.id ? category.title : `Category ${index + 1}`}</div>
+                <div className="category-title">{isSeen ? category.title : `Category ${index + 1}`}</div>
                 <div className="category-score">
                   {categoryScores[category.id] !== undefined ? categoryScores[category.id] : 0}
                 </div>
               </button>
-            ))}
+            )})}
           </div>
         </div>
         </div>

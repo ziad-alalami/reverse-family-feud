@@ -4,8 +4,21 @@ import Landing from './pages/Landing'
 import GameContainer from './pages/GameContainer'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('landing')
-  const [gameId, setGameId] = useState(null)
+  const [currentPage, setCurrentPage] = useState(() => {
+    return localStorage.getItem('currentPage') || 'landing'
+  })
+  const [gameId, setGameId] = useState(() => {
+    return localStorage.getItem('gameId') || null
+  })
+
+  useEffect(() => {
+    localStorage.setItem('currentPage', currentPage)
+    if (gameId) {
+      localStorage.setItem('gameId', gameId)
+    } else {
+      localStorage.removeItem('gameId')
+    }
+  }, [currentPage, gameId])
 
   const handleJoinGame = (id) => {
     setGameId(id)

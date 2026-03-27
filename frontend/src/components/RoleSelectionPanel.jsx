@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { playerAPI } from '../utils/api'
 import { COLOR_PALETTE } from '../utils/constants'
 import './RoleSelectionPanel.css'
@@ -13,6 +13,17 @@ export default function RoleSelectionPanel({ gameId, onRoleSelected, onLogout })
   const [selectedColor, setSelectedColor] = useState(COLOR_PALETTE[0])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [existingTeams, setExistingTeams] = useState([])
+  const [selectedExistingTeam, setSelectedExistingTeam] = useState('')
+
+  useEffect(() => {
+    if (step === 'player-setup') {
+      playerAPI.getGamePlayers(gameId)
+        .then(res => setExistingTeams(res.data.filter(p => p.role === 'player')))
+        .catch(err => console.error('Failed to load existing teams', err))
+    }
+  }, [gameId, step])
+
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role)
@@ -60,6 +71,15 @@ export default function RoleSelectionPanel({ gameId, onRoleSelected, onLogout })
   const handlePlayerSetup = async (e) => {
     e.preventDefault()
     setError('')
+
+    // If joining an existing team
+    if (selectedExistingTeam) {
+      const team = existingTeams.find(t => t.id === selectedExistingTeam)
+      if (team) {
+        onRoleSelected('player', team.id, team, null)
+      }
+      return
+    }
 
     if (!playerName.trim()) {
       setError('Player/Group name is required')
@@ -177,67 +197,91 @@ export default function RoleSelectionPanel({ gameId, onRoleSelected, onLogout })
           <h1>Join as Player</h1>
 
           <form onSubmit={handlePlayerSetup}>
-            <div className="form-group">
-              <label>Player / Group Name</label>
-              <input
-                type="text"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="Your name or group name"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Team Members (Optional)</label>
-              <div className="team-input-group">
-                <input
-                  type="text"
-                  value={newMember}
-                  onChange={(e) => setNewMember(e.target.value)}
-                  placeholder="Add a member name"
-                />
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={handleAddMember}
+            {existingTeams.length > 0 && (
+              <div className="form-group" style={{ background: '#f8f9fa', padding: '15px', borderRadius: '12px', marginBottom: '20px' }}>
+                <label style={{ color: '#004aad' }}>Join an Existing Team</label>
+                <select
+                  value={selectedExistingTeam}
+                  onChange={(e) => {
+                    setSelectedExistingTeam(e.target.value)
+                    setPlayerName('') // clear new team inputs
+                    setTeamMembers([])
+                  }}
+                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
                 >
-                  Add Member +
-                </button>
-              </div>
-
-              {teamMembers.length > 0 && (
-                <div className="team-members-list">
-                  {teamMembers.map((member, idx) => (
-                    <div key={idx} className="team-member">
-                      <span>{member}</span>
-                      <button
-                        type="button"
-                        className="remove-member-btn"
-                        onClick={() => handleRemoveMember(idx)}
-                      >
-                        ✕
-                      </button>
-                    </div>
+                  <option value="">— Create New Team Below —</option>
+                  {existingTeams.map(team => (
+                    <option key={team.id} value={team.id}>{team.name}</option>
                   ))}
-                </div>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label>Select Color</label>
-              <div className="color-palette">
-                {COLOR_PALETTE.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    className={`color-option ${selectedColor === color ? 'selected' : ''}`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => setSelectedColor(color)}
-                    title={color}
-                  />
-                ))}
+                </select>
               </div>
-            </div>
+            )}
+
+            {!selectedExistingTeam && (
+              <>
+                <div className="form-group">
+                  <label>Create New: Player / Group Name</label>
+                  <input
+                    type="text"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    placeholder="Your name or group name"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Team Members (Optional)</label>
+                  <div className="team-input-group">
+                    <input
+                      type="text"
+                      value={newMember}
+                      onChange={(e) => setNewMember(e.target.value)}
+                      placeholder="Add a member name"
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleAddMember}
+                    >
+                      Add Member +
+                    </button>
+                  </div>
+
+                  {teamMembers.length > 0 && (
+                    <div className="team-members-list">
+                      {teamMembers.map((member, idx) => (
+                        <div key={idx} className="team-member">
+                          <span>{member}</span>
+                          <button
+                            type="button"
+                            className="remove-member-btn"
+                            onClick={() => handleRemoveMember(idx)}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label>Select Color</label>
+                  <div className="color-palette">
+                    {COLOR_PALETTE.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`color-option ${selectedColor === color ? 'selected' : ''}`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => setSelectedColor(color)}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             {error && <div className="error-message">{error}</div>}
 
@@ -248,12 +292,13 @@ export default function RoleSelectionPanel({ gameId, onRoleSelected, onLogout })
                 onClick={() => {
                   setStep('role')
                   setSelectedRole(null)
+                  setSelectedExistingTeam('')
                 }}
               >
                 Back
               </button>
               <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? 'Joining...' : 'Join Game'}
+                {loading ? 'Joining...' : (selectedExistingTeam ? 'Join Team' : 'Create & Join')}
               </button>
             </div>
           </form>

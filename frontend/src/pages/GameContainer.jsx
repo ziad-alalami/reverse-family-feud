@@ -6,11 +6,29 @@ import AdminPanel from '../components/AdminPanel'
 import AnswerViewerPanel from '../components/AnswerViewerPanel'
 
 export default function GameContainer({ gameId, onLogout }) {
-  const [step, setStep] = useState('role-selection') // role-selection or game
-  const [playerId, setPlayerId] = useState(null)
-  const [playerRole, setPlayerRole] = useState(null)
-  const [playerData, setPlayerData] = useState(null)
-  const [adminPassword, setAdminPassword] = useState(null)
+  const [step, setStep] = useState(() => localStorage.getItem('gc_step') || 'role-selection')
+  const [playerId, setPlayerId] = useState(() => localStorage.getItem('gc_playerId') || null)
+  const [playerRole, setPlayerRole] = useState(() => localStorage.getItem('gc_playerRole') || null)
+  const [playerData, setPlayerData] = useState(() => {
+    const data = localStorage.getItem('gc_playerData')
+    return data ? JSON.parse(data) : null
+  })
+  const [adminPassword, setAdminPassword] = useState(() => localStorage.getItem('gc_adminPassword') || null)
+
+  useEffect(() => {
+    localStorage.setItem('gc_step', step)
+    if (playerId) localStorage.setItem('gc_playerId', playerId)
+    else localStorage.removeItem('gc_playerId')
+    
+    if (playerRole) localStorage.setItem('gc_playerRole', playerRole)
+    else localStorage.removeItem('gc_playerRole')
+
+    if (playerData) localStorage.setItem('gc_playerData', JSON.stringify(playerData))
+    else localStorage.removeItem('gc_playerData')
+
+    if (adminPassword) localStorage.setItem('gc_adminPassword', adminPassword)
+    else localStorage.removeItem('gc_adminPassword')
+  }, [step, playerId, playerRole, playerData, adminPassword])
 
   const handleRoleSelected = (role, id, data, password) => {
     setPlayerRole(role)
